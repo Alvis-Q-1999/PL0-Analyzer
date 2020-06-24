@@ -2,12 +2,12 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <getopt.h>
 
 #include "symbols.h"
 #include "keywords.h"
 
 /* extern variables of lex */
-extern FILE *in, *out;
 extern symbol_t *symhead, *symtail;
 
 /* Print version and copyright */
@@ -25,7 +25,10 @@ print_version()
 static inline void
 print_help(char **argv)
 {
-	printf("Usage: %s infile [outfile]\n", argv[0]);
+	printf("Usage: %s [options] infile\n"
+	       "Options:\n"
+	       "  -o\tSpecify output file",
+	       argv[0]);
 }
 
 int
@@ -36,31 +39,51 @@ main(int argc, char *argv[])
 	double duration;
 	SYMBOL flag;
 	FILE *stream;
+	int len;
 
-	print_version();
-	if (argc < 2) {
+	for (;;) {
+		int option = getopt(argc, argv, "o:");
+		if (option == -1)
+			break;
+
+		switch (option) {
+		case 'o':
+			len = strlen(optarg);
+			outfile = malloc(len);
+			if (!outfile) {
+				fprintf(stderr, "Out of memory\n");
+				return 1;
+			}
+			memcpy(outfile, optarg, len);
+			break;
+		default:
+			print_help(argv);
+			return 1;
+		}
+	}
+
+	if (argc - optind < 1) {
 		print_help(argv);
 		return 1;
 	}
+	print_version();
 
 	/* Open input file */
-	infile = argv[1];
-	if ((in = fopen(infile, "r")) == 0) {
-		fprintf(stderr, "Failed on opening file \"%s\"\n", infile);
-		return 1;
-	}
+	infile = argv[optind];
+	if (!(infile[0] == '-' && infile[1] == 0))
+		if ((freopen(infile, "r", stdin)) == 0) {
+			perror(infile);
+			return 1;
+		}
 
-	/* Specify output file name */
-	if (argc > 2) { /* Filename was specified in args */
-		outfile = argv[2];
-	} else {
-		/**
-		 * Generate a default filename
-		 * file		-> file.out
-		 * file.pl0	-> file.out
-		 */
-		int len = strlen(infile);
-		outfile = malloc(strlen(infile) + 4);
+	/**
+	 * Generate a default filename
+	 * file		-> file.out
+	 * file.pl0	-> file.out
+	 */
+	if (!outfile) {
+		len = strlen(infile);
+		outfile = malloc(len + 4);
 		memcpy(outfile, infile, len);
 
 		char *t = 0;
@@ -77,24 +100,24 @@ main(int argc, char *argv[])
 			memcpy(p, ".out", 5);
 	}
 
-	/* Open output file */
-	if ((out = fopen(outfile, "w+")) == 0) {
-		fprintf(stderr, "Cannot create file \"%s\".\n", outfile);
-		return 1;
-	}
-
 	/* Almost ready for lexical analysis */
-	printf("Lexical Analysis:\n\n");
+	printf("Lexical Analysis\n\n");
+
+	/* "-" for stdout */
+	if (!(outfile[0] == 0 || outfile[0] == '-' && outfile[1] == 0)) {
+		if (freopen(outfile, "w+", stdout) != 0)
+			perror(outfile);
+	}
 
 	/* Record start time */
 	start = clock();
 
 	/* Initialize variables */
 	symbol_init();
-	while (!feof(in)) {
+	while (!feof(stdin)) {
 		/* Get a symbol from input */
 		flag = getsym();
-		/* Abort when get invalid symbol */
+		/* Abort if get an invalid symbol */
 		if (!flag)
 			exit(1);
 		/* Or add it into chain */
@@ -103,10 +126,6 @@ main(int argc, char *argv[])
 
 	/* Record end time */
 	finish = clock();
-
-	/* Close file streams */
-	fclose(in);
-	fclose(out);
 
 	/* Print results of lex */
 	printf("+-----+--------------------+--------------------+\n"
