@@ -65,7 +65,7 @@ unget_char(int ch)
 /* Print error info if symbol cannot be recongnized */
 #define invalid()                                                              \
 	{                                                                      \
-		fprintf(stderr, "lex:%d:%d: invalid symbol: %s\n", err.row, \
+		fprintf(stderr, "lex:%d:%d: invalid symbol: %s\n", err.row,    \
 			err.col, id);                                          \
 		return nul;                                                    \
 	}
@@ -197,8 +197,10 @@ symbol_add(int flag)
 }
 
 void
-symbol_dump(symbol_t *symbol)
+symbol_dump(const char *format)
 {
-	printf("|%4d |%19s |%19s |\n", symbol->no, symbol->value,
-	       symtype[symbol->type]);
+	for (symbol_t *sym = symbols; sym != symtail; sym = sym->next) {
+		printf(format, sym->no, sym->value,
+		       symtype[sym->type]);
+	}
 }

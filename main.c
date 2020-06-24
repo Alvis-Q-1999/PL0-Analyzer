@@ -7,9 +7,6 @@
 #include "symbols.h"
 #include "keywords.h"
 
-/* extern variables of lex */
-extern symbol_t *symhead, *symtail;
-
 /* Print version and copyright */
 static inline void
 print_version()
@@ -132,10 +129,7 @@ main(int argc, char *argv[])
 	       "|%4s |%19s |%19s |\n"
 	       "+-----+--------------------+--------------------+\n",
 	       "No", "Symbol", "Symbol Type");
-
-	for (symbol_t *ptr = symhead; ptr != symtail; ptr = ptr->next) {
-		symbol_dump(ptr);
-	}
+	symbol_dump("|%4s |%19s |%19s |\n");
 	printf("+-----+--------------------+--------------------+\n");
 
 	/* Calculate time spent */
