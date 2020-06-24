@@ -5,9 +5,6 @@
 #include "symbols.h"
 #include "keywords.h"
 
-/* Input file and output file */
-FILE *in, *out;
-
 /* human readable */
 const char *symtype[33] = {
 	"nul",	  "eof",      "plus",	  "minus",	  "times",    "slash",
@@ -39,7 +36,7 @@ int token_num;
 int
 get_char()
 {
-	int ch = fgetc(in);
+	int ch = fgetc(stdin);
 	cur.col++;
 	if (ch == '\n') {
 		cur.row++;
@@ -51,7 +48,7 @@ get_char()
 int
 unget_char(int ch)
 {
-	ungetc(ch, in);
+	ungetc(ch, stdin);
 	cur.col--;
 	if (ch == '\n')
 		cur.row--;
