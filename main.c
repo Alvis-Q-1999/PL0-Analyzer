@@ -6,6 +6,7 @@
 
 #include "symbols.h"
 #include "keywords.h"
+#include "parser.h"
 
 /* Print version and copyright */
 static inline void
@@ -112,13 +113,8 @@ main(int argc, char *argv[])
 	/* Initialize variables */
 	token_init();
 	while (!feof(stdin)) {
-		/* Get a symbol from input */
-		flag = getsym();
-		/* Abort if get an invalid symbol */
-		if (!flag)
-			exit(1);
-		/* Or add it into chain */
-		token_add(flag);
+		/* Break on yass errors but print results of lex */
+		parse();
 	}
 
 	/* Record end time */
