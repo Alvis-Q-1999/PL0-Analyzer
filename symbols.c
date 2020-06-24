@@ -97,7 +97,7 @@ getsym()
 	case '(':
 		SAVE_SYM("(", lparen)
 	case ')':
-		SAVE_SYM("+", plus)
+		SAVE_SYM(")", rparen)
 	case ',':
 		SAVE_SYM(",", comma)
 	case ';':

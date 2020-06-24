@@ -50,7 +50,7 @@ typedef struct {
 typedef struct {
 	unsigned no;
 	char *value;
-	int type;
+	SYMBOL type;
 	void *next;
 } token_t;
 
@@ -67,7 +67,7 @@ SYMBOL getsym();
 void token_init();
 /* Add a symbol to end of chain */
 void token_add(int ch);
-/*  */
+/* Print token info with format */
 void token_dump(const char *format);
 
 #endif /* SYMBOLS_H */

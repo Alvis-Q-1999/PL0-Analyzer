@@ -101,7 +101,7 @@ parse_statement(const token_t *token)
 	if (token->type == ifsym) { // if
 		parse_condition(next_token()); // a > 1
 
-		assert(next_token(), thensym); // then
+		assert(token_tail, thensym); // then
 
 		parse_statement(next_token()); // a := 1
 	}
@@ -152,7 +152,8 @@ static inline void
 parse_item(const token_t *token)
 {
 	parse_factor(token);
-	for (next_token();;) {
+	for (;;) {
+		next_token();
 		if (token_tail->type == times ||
 		    token_tail->type == slash) { // * or /
 			parse_factor(next_token());
