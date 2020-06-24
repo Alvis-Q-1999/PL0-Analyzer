@@ -110,7 +110,7 @@ main(int argc, char *argv[])
 	start = clock();
 
 	/* Initialize variables */
-	symbol_init();
+	token_init();
 	while (!feof(stdin)) {
 		/* Get a symbol from input */
 		flag = getsym();
@@ -118,7 +118,7 @@ main(int argc, char *argv[])
 		if (!flag)
 			exit(1);
 		/* Or add it into chain */
-		symbol_add(flag);
+		token_add(flag);
 	}
 
 	/* Record end time */
@@ -129,7 +129,8 @@ main(int argc, char *argv[])
 	       "|%4s |%19s |%19s |\n"
 	       "+-----+--------------------+--------------------+\n",
 	       "No", "Symbol", "Symbol Type");
-	symbol_dump("|%4s |%19s |%19s |\n");
+	/* Iterate all the tokens */
+	token_dump("|%4d |%19s |%19s |\n");
 	printf("+-----+--------------------+--------------------+\n");
 
 	/* Calculate time spent */

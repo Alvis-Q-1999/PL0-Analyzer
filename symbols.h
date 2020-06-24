@@ -52,7 +52,7 @@ typedef struct {
 	char *value;
 	int type;
 	void *next;
-} symbol_t;
+} token_t;
 
 #define PREALLOC_SYM_NUM 0x010
 
@@ -64,10 +64,10 @@ int unget_char(int ch);
 SYMBOL getsym();
 
 /* Initialize variables */
-void symbol_init();
+void token_init();
 /* Add a symbol to end of chain */
-void symbol_add(int ch);
+void token_add(int ch);
 /*  */
-void symbol_dump(symbol_t *symbol);
+void token_dump(const char *format);
 
 #endif /* SYMBOLS_H */

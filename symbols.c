@@ -18,9 +18,9 @@ const char *symtype[33] = {
 /* Current position and error position */
 pos_t cur, err;
 /* Preallocated symbol chain */
-symbol_t symbols[PREALLOC_SYM_NUM];
+token_t tokens[PREALLOC_SYM_NUM];
 /* Head and tail of the chain, the chain itself is hidden to others */
-symbol_t *symhead = symbols, *symtail = symbols;
+token_t *token_tail = tokens;
 
 /* Max length of an ident */
 #define MAX_IDENT 20
@@ -169,7 +169,7 @@ getsym()
 }
 
 void
-symbol_init()
+token_init()
 {
 	cur.row = 1;
 	cur.col = 0;
@@ -177,30 +177,29 @@ symbol_init()
 }
 
 void
-symbol_add(int flag)
+token_add(int flag)
 {
-	symbol_t *sym;
+	token_t *t;
 	if (token_num < PREALLOC_SYM_NUM) {
-		sym = symbols + token_num - 1;
+		t = tokens + token_num - 1;
 	} else {
-		sym = malloc(sizeof(symbol_t));
+		t = malloc(sizeof(token_t));
 	}
 
 	int len = strlen(id);
-	sym->no = token_num;
-	sym->value = malloc(len);
-	sym->type = flag;
-	memcpy(sym->value, id, len);
+	t->no = token_num;
+	t->value = malloc(len);
+	t->type = flag;
+	memcpy(t->value, id, len);
 
-	symtail->next = sym;
-	symtail = sym;
+	token_tail->next = t;
+	token_tail = t;
 }
 
 void
-symbol_dump(const char *format)
+token_dump(const char *format)
 {
-	for (symbol_t *sym = symbols; sym != symtail; sym = sym->next) {
-		printf(format, sym->no, sym->value,
-		       symtype[sym->type]);
+	for (token_t *t = tokens; t != token_tail; t = t->next) {
+		printf(format, t->no, t->value, symtype[t->type]);
 	}
 }
